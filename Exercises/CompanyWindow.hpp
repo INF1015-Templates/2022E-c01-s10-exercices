@@ -54,9 +54,9 @@ public slots:
 	 */
 	void fireSelected();
 	/**
-	 * @brief createEmployee To create a new employee locally
+	 * @brief hireNewEmployee To create a new employee locally
 	 */
-	void createEmployee();
+	void hireNewEmployee();
 	/**
 	 * @brief employeeHasBeenAdded To run when an employee has been added
 	 */
@@ -66,6 +66,7 @@ public slots:
 	 */
 	void employeeHasBeenDeleted(Employee*);
 
+	Employee* createEmployee(const string& type, const string& name, double salary, double bonus = 0);
 
 private:
 	CompanyWindow(unique_ptr<Company> companyRes, Company* company, QWidget* parent);

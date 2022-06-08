@@ -77,7 +77,7 @@ void CompanyWindow::setupUi() {
 	connect(ui_->fireButton, SIGNAL(clicked()), this, SLOT(fireSelected()));
 
 	// Bouton pour embaucher la personne dont on vient d'entrer les informations
-	connect(ui_->hireButton, SIGNAL(clicked()), this, SLOT(createEmployee()));
+	connect(ui_->hireButton, SIGNAL(clicked()), this, SLOT(hireNewEmployee()));
 
 	// Enfin, on met à jour le titre de la fenêtre
 	QString title = "Employee Manager for " + QString(company_->getName().c_str());
@@ -105,8 +105,10 @@ void CompanyWindow::loadEmployees() {
 }
 
 bool CompanyWindow::filterHide(Employee* employee) {
+	// L'indice 0 est "Show All", donc on ne filtre rien.
 	if (currentFilterIndex_ == 0)
 		return false;
+	// Les indices dans la liste de filtres correspondent aux indices dans notre tableau de catégories.
 	return not employeeCategories_[currentFilterIndex_ - 1]->contains(employee);
 }
 
@@ -210,40 +212,22 @@ void CompanyWindow::fireSelected() {
 	}
 }
 
-void CompanyWindow::createEmployee() {
-	// On va créer un nouvel employé que l'on placera dans ce pointeur
-	unique_ptr<Employee> newEmployee;
-
-	// On créé le bon type d'employé selon le cas
-	QAbstractButton* selectedType = 0;
+void CompanyWindow::hireNewEmployee() {
+	// On détermine le bon type d'employé selon les radio buttons.
+	string selectedType;
 	for (auto&& btn : ui_->employeeTypeRadioButtons->buttons()) {
 		if (btn->isChecked()) {
-			selectedType = btn;
+			selectedType = btn->text().toStdString();
 			break;
 		}
 	}
-
+	// On détermine les autres attributs selon les line edits.
 	string name = ui_->nameEditor->text().toStdString();
 	double salary = ui_->salaryEditor->text().toDouble();
 	double bonus = ui_->bonusEditor->text().toDouble();
-	// On créé le bon type d'employé selon le cas
-	if (selectedType->text().endsWith("Manager")) {
-		auto man = make_unique<Manager>(name, salary, bonus);
-		managers_.insert(man.get());
-		newEmployee = std::move(man);
-	} else if (selectedType->text().endsWith("Secretary")) {
-		auto sec = make_unique<Secretary>(name, salary);
-		secretaries_.insert(sec.get());
-		newEmployee = std::move(sec);
-	} else {
-		newEmployee = make_unique<Employee>(name, salary);
-		otherEmployees_.insert(newEmployee.get());
-	}
 
-	// On ajoute le nouvel employé créé à la company
-	company_->addEmployee(newEmployee.get());
-	// Mais on le stocke aussi localement pour pouvoir le supprimer plus tard
-	added_.push_back(std::move(newEmployee));
+	// On créé et ajoute l'employé.
+	createEmployee(selectedType, name, salary, bonus);
 }
 
 void CompanyWindow::employeeHasBeenAdded(Employee* employee) {
@@ -278,6 +262,31 @@ void CompanyWindow::employeeHasBeenDeleted(Employee* e) {
 	// On remet à zéro l'affichage de la colonne de gauche étant
 	// donné que les employés sélectionnés ont été supprimés
 	cleanDisplay();
+}
+
+Employee* CompanyWindow::createEmployee(const string& type, const string& name, double salary, double bonus) {
+	unique_ptr<Employee> newEmployee;
+
+	// On crée selon le type spécifié.
+	if (type.ends_with("Manager")) {
+		auto man = make_unique<Manager>(name, salary, bonus);
+		managers_.insert(man.get());
+		newEmployee = std::move(man);
+	} else if (type.ends_with("Secretary")) {
+		auto sec = make_unique<Secretary>(name, salary);
+		secretaries_.insert(sec.get());
+		newEmployee = std::move(sec);
+	} else {
+		newEmployee = make_unique<Employee>(name, salary);
+		otherEmployees_.insert(newEmployee.get());
+	}
+
+	// On ajoute le nouvel employé créé à la company
+	company_->addEmployee(newEmployee.get());
+	// Mais on le stocke aussi localement pour pouvoir le supprimer plus tard
+	added_.push_back(std::move(newEmployee));
+
+	return added_.back().get();
 }
 
 
