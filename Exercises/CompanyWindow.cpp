@@ -144,7 +144,7 @@ void CompanyWindow::selectEmployee(QListWidgetItem* item) {
 	ui_->bonusEditor->setReadOnly(true);
 	if (managers_.contains(employee)) {
 		ui_->bonusEditor->setDisabled(false);
-		ui_->bonusEditor->setText(QString("%1% (included in salary)").arg(((Manager*)employee)->getBonus()));
+		ui_->bonusEditor->setText(QString("%1% (included in salary)").arg(dynamic_cast<Manager*>(employee)->getBonus()));
 	} else {
 		ui_->bonusEditor->setDisabled(true);
 		ui_->bonusEditor->setText("");
@@ -216,13 +216,8 @@ void CompanyWindow::fireSelected() {
 
 void CompanyWindow::hireNewEmployee() {
 	// On détermine le bon type d'employé selon les radio buttons.
-	string selectedType;
-	for (auto&& btn : ui_->employeeTypeRadioButtons->buttons()) {
-		if (btn->isChecked()) {
-			selectedType = btn->text().toStdString();
-			break;
-		}
-	}
+	auto* btn = ui_->employeeTypeRadioButtons->checkedButton();
+	string selectedType = btn->text().toStdString();
 	// On détermine les autres attributs selon les line edits.
 	string name = ui_->nameEditor->text().toStdString();
 	double salary = ui_->salaryEditor->text().toDouble();
