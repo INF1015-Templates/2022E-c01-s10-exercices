@@ -123,13 +123,13 @@ void CompanyWindow::filterList(int index) {
 void CompanyWindow::selectEmployee(QListWidgetItem* item) {
 	Employee* employee = item->data(Qt::UserRole).value<Employee*>();
 
-	ui_->nameEditor->setDisabled(true);
+	ui_->nameEditor->setReadOnly(true);
 	ui_->nameEditor->setText(QString::fromStdString(employee->getName()));
 
-	ui_->salaryEditor->setDisabled(true);
+	ui_->salaryEditor->setReadOnly(true);
 	ui_->salaryEditor->setText(QString::number(employee->getSalary()));
 
-	ui_->bonusEditor->setDisabled(true);
+	ui_->bonusEditor->setReadOnly(true);
 	if (typeid(*employee) == typeid(Manager)) {
 		ui_->bonusEditor->setText(QString("%1% (included in salary)").arg(((Manager*)employee)->getBonus()));
 	} else {
@@ -151,13 +151,13 @@ void CompanyWindow::selectEmployee(QListWidgetItem* item) {
 }
 
 void CompanyWindow::cleanDisplay() {
-	ui_->nameEditor->setDisabled(false);
+	ui_->nameEditor->setReadOnly(false);
 	ui_->nameEditor->setText("");
 
-	ui_->salaryEditor->setDisabled(false);
+	ui_->salaryEditor->setReadOnly(false);
 	ui_->salaryEditor->setText("");
 
-	ui_->bonusEditor->setDisabled(true);
+	ui_->bonusEditor->setReadOnly(false);
 	ui_->bonusEditor->setText("0");
 
 	for (auto&& btn : ui_->employeeTypeRadioButtons->buttons()) {
