@@ -26,7 +26,7 @@
         </item>
         <item>
          <property name="text">
-          <string>Show Managers Only</string>
+          <string>Show Others Only</string>
          </property>
         </item>
         <item>
@@ -36,7 +36,7 @@
         </item>
         <item>
          <property name="text">
-          <string>Show Others Only</string>
+          <string>Show Managers Only</string>
          </property>
         </item>
        </widget>
@@ -49,18 +49,22 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="fireEveryoneButton">
-        <property name="text">
-         <string>Fire Everyone</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="hireSomeoneButton">
-        <property name="text">
-         <string>Hire Someone New</string>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout_7">
+        <item>
+         <widget class="QPushButton" name="fireEveryoneButton">
+          <property name="text">
+           <string>Fire Everyone</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="hireSomeoneButton">
+          <property name="text">
+           <string>Hire Someone New</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </item>
@@ -125,10 +129,16 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_6">
         <item>
-         <widget class="QRadioButton" name="managerRButton">
+         <widget class="QRadioButton" name="employeeRButton">
           <property name="text">
-           <string>Manager</string>
+           <string>Employee</string>
           </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">employeeTypeRadioButtons</string>
+          </attribute>
          </widget>
         </item>
         <item>
@@ -142,12 +152,9 @@
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="employeeRButton">
+         <widget class="QRadioButton" name="managerRButton">
           <property name="text">
-           <string>Employee</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
+           <string>Manager</string>
           </property>
           <attribute name="buttonGroup">
            <string notr="true">employeeTypeRadioButtons</string>

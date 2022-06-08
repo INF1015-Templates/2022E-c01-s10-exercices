@@ -3,6 +3,8 @@
 #include <cstdint>
 
 #include <string>
+#include <ranges>
+#include <algorithm>
 
 #include <cppitertools/itertools.hpp>
 
@@ -41,13 +43,6 @@ CompanyWindow::CompanyWindow(unique_ptr<Company> companyRes, Company* company, Q
 	connect(company_, SIGNAL(employeeAdded(Employee*)), this, SLOT(employeeHasBeenAdded(Employee*)));
 	connect(company_, SIGNAL(employeeDeleted(Employee*)), this, SLOT(employeeHasBeenDeleted(Employee*)));
 
-	// On remplit nos catégories d'employés.
-	employeeCategories_ = {
-		&managers_,
-		&secretaries_,
-		&otherEmployees_,
-	};
-
 	loadEmployees();
 }
 
@@ -70,8 +65,15 @@ void CompanyWindow::setupUi() {
 	// Le bouton pour remettre à zéro la vue et créer un nouvel employé
 	connect(ui_->hireSomeoneButton, SIGNAL(clicked()), this, SLOT(cleanDisplay()));
 
-	// Boutons radio
+	// Boutons radio et catégories d'employés
 	connect(ui_->employeeTypeRadioButtons, SIGNAL(buttonClicked(int)), this, SLOT(changedEmployeeType(int)));
+	employeeCategories_ = {
+		{"Employee", &otherEmployees_, ui_->employeeRButton},
+		{"Secretary", &secretaries_, ui_->secretaryRButton},
+		{"Manager", &managers_, ui_->managerRButton}
+	};
+	for (auto&& [id, cat] : enumerate(employeeCategories_))
+		ui_->employeeTypeRadioButtons->setId(cat.radioButton, id);
 
 	// Bouton pour congédier la ou les personne(s) sélectionnée(s) dans la liste
 	connect(ui_->fireButton, SIGNAL(clicked()), this, SLOT(fireSelected()));
@@ -109,7 +111,7 @@ bool CompanyWindow::filterHide(Employee* employee) {
 	if (currentFilterIndex_ == 0)
 		return false;
 	// Les indices dans la liste de filtres correspondent aux indices dans notre tableau de catégories.
-	return not employeeCategories_[currentFilterIndex_ - 1]->contains(employee);
+	return not employeeCategories_[currentFilterIndex_ - 1].employees->contains(employee);
 }
 
 void CompanyWindow::filterList(int index) {
@@ -149,15 +151,11 @@ void CompanyWindow::selectEmployee(QListWidgetItem* item) {
 	}
 
 	// On coche le bon type d'employé.
-	for (auto&& btn : ui_->employeeTypeRadioButtons->buttons()) {
-		btn->setDisabled(true);
-
-		bool checked = managers_.contains(employee) and btn->text().endsWith("Manager") or
-		               secretaries_.contains(employee) and btn->text().endsWith("Secretary") or
-		               otherEmployees_.contains(employee) and btn->text().endsWith("Employee");
-
-		btn->setChecked(checked);
-	}
+	auto it = ranges::find_if(employeeCategories_, [&](const EmployeeCategory& cat) {
+		return cat.employees->contains(employee);
+	});
+	int categoryId = it - employeeCategories_.begin();
+	ui_->employeeTypeRadioButtons->button(categoryId)->setChecked(true);
 
 	ui_->fireButton->setDisabled(false);
 	ui_->hireButton->setDisabled(true);
@@ -172,14 +170,9 @@ void CompanyWindow::cleanDisplay() {
 
 	ui_->bonusEditor->setDisabled(true);
 	ui_->bonusEditor->setReadOnly(false);
-	ui_->bonusEditor->setText("0");
+	ui_->bonusEditor->setText("");
 
-	for (auto&& btn : ui_->employeeTypeRadioButtons->buttons()) {
-		btn->setDisabled(false);
-		if (btn->text().endsWith("Employee")) {
-			btn->setChecked(true);
-		}
-	}
+	ui_->employeeTypeRadioButtons->button(0)->setChecked(0);
 
 	ui_->employeesList->clearSelection();
 
@@ -190,12 +183,10 @@ void CompanyWindow::cleanDisplay() {
 }
 
 void CompanyWindow::changedEmployeeType(int index) {
-	auto&& foo = ui_->employeeTypeRadioButtons->buttons();
-	if (index == -2) {
+	if (employeeCategories_[index].name == "Manager")
 		ui_->bonusEditor->setDisabled(false);
-	} else {
+	else
 		ui_->bonusEditor->setDisabled(true);
-	}
 }
 
 void CompanyWindow::fireEveryone() {
@@ -208,7 +199,7 @@ void CompanyWindow::fireEveryone() {
 	for (Employee* e : toDelete) {
 		company_->delEmployee(e);
 		for (auto&& cat : employeeCategories_)
-			cat->erase(e);
+			cat.employees->erase(e);
 	}
 }
 
@@ -221,7 +212,7 @@ void CompanyWindow::fireSelected() {
 	for (Employee* e : toDelete) {
 		company_->delEmployee(e);
 		for (auto&& cat : employeeCategories_)
-			cat->erase(e);
+			cat.employees->erase(e);
 	}
 }
 

@@ -3,6 +3,7 @@
 #include <QMainWindow>
 #include <QListWidget>
 #include <QString>
+#include <QRadioButton>
 
 #include <memory>
 #include <vector>
@@ -69,6 +70,12 @@ public slots:
 	Employee* createEmployee(const string& type, const string& name, double salary, double bonus = 0);
 
 private:
+	struct EmployeeCategory {
+		string                    name;
+		unordered_set<Employee*>* employees;
+		QRadioButton*             radioButton;
+	};
+
 	CompanyWindow(unique_ptr<Company> companyRes, Company* company, QWidget* parent);
 
 	void setupMenu();
@@ -84,5 +91,5 @@ private:
 	unordered_set<Employee*> managers_;
 	unordered_set<Employee*> secretaries_;
 	unordered_set<Employee*> otherEmployees_;
-	vector<unordered_set<Employee*>*> employeeCategories_;
+	vector<EmployeeCategory> employeeCategories_;
 };

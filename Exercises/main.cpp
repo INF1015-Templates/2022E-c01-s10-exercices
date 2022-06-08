@@ -11,12 +11,12 @@ using namespace std;
 
 
 void preAddEmployees(CompanyWindow& window) {
-	window.createEmployee("Employee",  "Emp A", 42);
-	window.createEmployee("Employee",  "Emp B", 69);
-	window.createEmployee("Secretary", "Sec A", 420);
-	window.createEmployee("Secretary", "Sec B", 1337);
-	window.createEmployee("Manager",   "Mngr A", 0xDEAD);
-	window.createEmployee("Manager",   "Mngr B", 0xBEEF);
+	window.createEmployee("Employee",  "Mohamed Doyon", 42);
+	window.createEmployee("Employee",  "Kevin Barrette", 69);
+	window.createEmployee("Secretary", "Alyson Nolin", 420);
+	window.createEmployee("Secretary", "Robert Thomas", 1337);
+	window.createEmployee("Manager",   "David Ducharme", 0xDEAD, 10);
+	window.createEmployee("Manager",   "Claude Hernandez", 0xBEEF, 15);
 }
 
 
