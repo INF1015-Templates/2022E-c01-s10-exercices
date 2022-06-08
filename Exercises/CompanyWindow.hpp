@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 #include <unordered_set>
+#include <span>
 
 #include "Company.hpp"
 
@@ -66,8 +67,8 @@ public slots:
 	 * @brief employeeHasBeenDeleted To run when an employee has been deleted
 	 */
 	void employeeHasBeenDeleted(Employee*);
-
 	Employee* createEmployee(const string& type, const string& name, double salary, double bonus = 0);
+	void fireEmployees(span<Employee*>);
 
 private:
 	struct EmployeeCategory {

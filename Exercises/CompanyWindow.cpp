@@ -162,27 +162,31 @@ void CompanyWindow::selectEmployee(QListWidgetItem* item) {
 }
 
 void CompanyWindow::cleanDisplay() {
+	// On efface le contenu des line edit et on se met en mode d'ajout d'employé.
 	ui_->nameEditor->setReadOnly(false);
 	ui_->nameEditor->setText("");
-
 	ui_->salaryEditor->setReadOnly(false);
 	ui_->salaryEditor->setText("");
-
 	ui_->bonusEditor->setDisabled(true);
 	ui_->bonusEditor->setReadOnly(false);
 	ui_->bonusEditor->setText("");
 
+	// On coche employé de base par défaut.
 	ui_->employeeTypeRadioButtons->button(0)->setChecked(0);
 
+	// On efface la liste des employés affi.chés
 	ui_->employeesList->clearSelection();
 
+	// On grise les bons boutons.
 	ui_->fireButton->setDisabled(true);
 	ui_->hireButton->setDisabled(false);
 
+	// On met le curseur dans la ligne d'édition de nom.
 	ui_->nameEditor->setFocus();
 }
 
 void CompanyWindow::changedEmployeeType(int index) {
+	// On grise ou active l'édition de bonus selon le type d'employé à créer.
 	if (employeeCategories_[index].name == "Manager")
 		ui_->bonusEditor->setDisabled(false);
 	else
@@ -190,30 +194,24 @@ void CompanyWindow::changedEmployeeType(int index) {
 }
 
 void CompanyWindow::fireEveryone() {
+	// On choisit tout le monde dans la liste d'employés.
 	vector<Employee*> toDelete;
 	for (int i = 0; i < ui_->employeesList->count(); ++i) {
 		QListWidgetItem *item = ui_->employeesList->item(i);
 		toDelete.push_back(item->data(Qt::UserRole).value<Employee*>());
 	}
-
-	for (Employee* e : toDelete) {
-		company_->delEmployee(e);
-		for (auto&& cat : employeeCategories_)
-			cat.employees->erase(e);
-	}
+	// On les renvoie.
+	fireEmployees(toDelete);
 }
 
 void CompanyWindow::fireSelected() {
+	// On choisit tous les employés qui sont sélectionnés (il n'y en a probablement que un).
 	vector<Employee*> toDelete;
 	for (QListWidgetItem *item : ui_->employeesList->selectedItems()) {
 		toDelete.push_back(item->data(Qt::UserRole).value<Employee*>());
 	}
-
-	for (Employee* e : toDelete) {
-		company_->delEmployee(e);
-		for (auto&& cat : employeeCategories_)
-			cat.employees->erase(e);
-	}
+	// On les renvoie.
+	fireEmployees(toDelete);
 }
 
 void CompanyWindow::hireNewEmployee() {
@@ -288,9 +286,18 @@ Employee* CompanyWindow::createEmployee(const string& type, const string& name, 
 	// On ajoute le nouvel employé créé à la company
 	company_->addEmployee(newEmployee.get());
 	// Mais on le stocke aussi localement pour pouvoir le supprimer plus tard
+	Employee* employeePtr = newEmployee.get();
 	added_.push_back(std::move(newEmployee));
 
-	return added_.back().get();
+	return employeePtr;
+}
+
+void CompanyWindow::fireEmployees(span<Employee*> employeesToDelete) {
+	for (Employee* e : employeesToDelete) {
+		company_->delEmployee(e);
+		for (auto&& cat : employeeCategories_)
+			cat.employees->erase(e);
+	}
 }
 
 
