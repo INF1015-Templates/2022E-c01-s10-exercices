@@ -42,9 +42,9 @@ public slots:
 	 */
 	void cleanDisplay();
 	/**
-	 * @brief changedType To update the editor when we select a different type of employee
+	 * @brief changedEmployeeType To update the editor when we select a different type of employee
 	 */
-	void changedType(int);
+	void changedEmployeeType(int);
 	/**
 	 * @brief fireEveryone To fire all the employees
 	 */

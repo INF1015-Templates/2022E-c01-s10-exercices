@@ -81,7 +81,7 @@
         <item>
          <widget class="QLabel" name="nameLabel">
           <property name="text">
-           <string>Name:</string>
+           <string>Name</string>
           </property>
          </widget>
         </item>
@@ -99,7 +99,7 @@
         <item>
          <widget class="QLabel" name="salaryLabel">
           <property name="text">
-           <string>Salary:</string>
+           <string>Salary</string>
           </property>
          </widget>
         </item>
@@ -113,7 +113,7 @@
         <item>
          <widget class="QLabel" name="bonusLabel">
           <property name="text">
-           <string>Bonus:</string>
+           <string>Bonus %</string>
           </property>
          </widget>
         </item>
@@ -129,9 +129,6 @@
           <property name="text">
            <string>Manager</string>
           </property>
-          <attribute name="buttonGroup">
-           <string notr="true">employeeTypeRadioButtons</string>
-          </attribute>
          </widget>
         </item>
         <item>
